@@ -1,0 +1,421 @@
+
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Chetx
+ */
+public class mostrar_Registros_Visitas extends javax.swing.JFrame {
+
+    static Connection cn;
+    static Statement s;
+    static ResultSet rs, rsv, rsb;
+    static String nombre, apellidoP, fecha, hora, user, nombre_in;
+    static int id;
+    static TableRowSorter filtro;
+    static File archivoSalida;
+    static FileOutputStream flujoSalida;
+    static PrintWriter archivoTxt;
+    /**
+     * Creates new form mostrar_Registros_Visitas
+     */
+    public mostrar_Registros_Visitas() {
+        initComponents();
+        Color c = new Color(240, 230, 140);
+        this.getContentPane().setBackground(c);
+        listar();
+    }
+    
+    public int buscar_user(){
+        int r = 0;
+        try{
+            Connection conect = null;
+            conect = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "isw", "isw");
+            Statement st = conect.createStatement();
+            String sql="SELECT NOMBRE_VI FROM VISITANTES WHERE NOMBRE_VI ='"+n_buscar.getText()+"'";
+            rs = st.executeQuery(sql);
+            if(rs.next()){
+                r = 1;
+            }
+            rs.close();
+            conect.close();
+        }catch(Exception e){
+            
+        }
+        return r;
+    }
+    
+    public int buscar_nombre(){
+        int r = 0;
+        try{
+            Connection conect = null;
+            conect = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "isw", "isw");
+            Statement st = conect.createStatement();
+            String sql="SELECT NOMBRE FROM VISITANTES WHERE NOMBRE ='"+n_buscar.getText()+"'";
+            rs = st.executeQuery(sql);
+            if(rs.next()){
+                r = 2;
+            }
+            rs.close();
+            
+        }catch(Exception e){
+            
+        }
+        
+        return r;
+    }
+    
+    public void listar() {
+
+       Object [] alNivel2;
+       String [] titulo = {"Nombre Visitante", "Fecha de Visita", "Hora de Visita", "Nombre de Inquilino Visitado"};
+            DefaultTableModel tabla = new DefaultTableModel(null, titulo);
+        try {
+            
+            Connection conect = null;
+            conect = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "isw", "isw");
+            Statement st = conect.createStatement();
+            //String sql="SELECT ID FROM VISITANTES";
+            String sqlB = "SELECT NOMBRE_VI, FECHA, HORA, NOMBRE FROM VISITANTES ORDER BY FECHA DESC, HORA DESC";
+            rsb = st.executeQuery(sqlB);
+            //rs = st.executeQuery(sql); // ejecuta la query
+            //Se declaran las variables que tomaran cada uno de los datos que devuelve la tabla
+         
+            //Se limpia el array list de tipo Nivel2
+            
+            //Obtiene los datos uno por uno y lo da a la variable correspondiente
+            
+            while (rsb.next()) {
+                //id = rsb.getInt("ID");
+                //String sqlV = "SELECT NOMBRE FROM USUARIOS WHERE ID = "+id;
+                //rsv = st.executeQuery(sqlV);
+                //if(rsv.next()){
+                nombre_in = rsb.getString("NOMBRE");
+                //}
+                nombre = rsb.getString("NOMBRE_VI");
+                fecha = rsb.getString("FECHA");
+                hora = rsb.getString("HORA");
+                    //nombre_in = rsb.getString("Hora");
+                //cuentas c = new cuentas(id,nombre,apellidoP,apellidoM,edad,telefono,genero,ocupNO,vehNo,calle,casaNo);
+                //Se crea una nueva instancia y se agrega al array
+                //alNivel2 = {id,nombre,apellidoP,apellidoM,edad,telefono,genero,ocupNO,vehNo,calle,casaNo};
+                Object [] row ={nombre,fecha.substring(0, 10), hora, nombre_in};
+                tabla.addRow(row);
+                
+            }
+            //rsv.close();
+            rsb.close();
+            
+            //Por si hubiera un error con la DB
+        } catch (SQLException sqle) {
+            System.out.println("Error SQL....." + sqle);
+        }
+        datosVisit.setModel(tabla);
+         // se cierra la conexión
+         // retorna el array completo
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel();
+        regresar = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        datosVisit = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        n_buscar = new javax.swing.JTextField();
+        buscar = new javax.swing.JButton();
+        restablecer = new javax.swing.JButton();
+        guadar = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setUndecorated(true);
+
+        jLabel1.setFont(new java.awt.Font("Arial Black", 0, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(207, 167, 16));
+        jLabel1.setText("Entradas de Visitantes");
+        jLabel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(112, 83, 15), 3));
+
+        regresar.setBackground(new java.awt.Color(240, 248, 255));
+        regresar.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        regresar.setText("Regresar");
+        regresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                regresarActionPerformed(evt);
+            }
+        });
+
+        datosVisit.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Nombre de Visitante", "Fecha de visita", "Nombre de Inquilino"
+            }
+        ));
+        jScrollPane1.setViewportView(datosVisit);
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logitoV3.png"))); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Arial Black", 0, 18)); // NOI18N
+        jLabel3.setText("Nombre de Visitante/Inquilino:");
+
+        n_buscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                n_buscarKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                n_buscarKeyTyped(evt);
+            }
+        });
+
+        buscar.setBackground(new java.awt.Color(240, 248, 255));
+        buscar.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        buscar.setText("Buscar");
+        buscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscarActionPerformed(evt);
+            }
+        });
+
+        restablecer.setBackground(new java.awt.Color(240, 248, 255));
+        restablecer.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        restablecer.setText("Restablecer");
+        restablecer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                restablecerActionPerformed(evt);
+            }
+        });
+
+        guadar.setBackground(new java.awt.Color(240, 248, 255));
+        guadar.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        guadar.setText("Guardar");
+        guadar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guadarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 44, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(n_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(buscar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(guadar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(restablecer))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(regresar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addGap(52, 52, 52)))
+                        .addComponent(jLabel2))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 799, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(77, 77, 77))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(regresar)
+                        .addGap(2, 2, 2)
+                        .addComponent(jLabel1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(n_buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buscar)
+                    .addComponent(restablecer)
+                    .addComponent(guadar))
+                .addGap(45, 45, 45)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void regresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regresarActionPerformed
+        this.setVisible(false);
+        if(new login().getTipo() == 1){
+            new menu().setVisible(true);
+        }else{
+            new menu_inquilino().setVisible(true);
+        }
+    }//GEN-LAST:event_regresarActionPerformed
+
+    private void buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarActionPerformed
+        try{
+            
+            if(n_buscar.getText().matches("^[a-zA-Z]*$") || n_buscar.getText().contains(" ")){
+                if(n_buscar.getText().equals("")){
+                    filtro = new TableRowSorter(datosVisit.getModel());
+                    datosVisit.setRowSorter(filtro);
+                    filtro.setRowFilter(RowFilter.regexFilter(n_buscar.getText(), 0));
+                }
+                else if(buscar_user() == 1){
+                    filtro = new TableRowSorter(datosVisit.getModel());
+                    datosVisit.setRowSorter(filtro);
+                    filtro.setRowFilter(RowFilter.regexFilter(n_buscar.getText(), 0));
+                }else if(buscar_nombre() == 2){
+                    filtro = new TableRowSorter(datosVisit.getModel());
+                    datosVisit.setRowSorter(filtro);
+                    filtro.setRowFilter(RowFilter.regexFilter(n_buscar.getText(), 3));
+                }else{
+                    JOptionPane.showMessageDialog(null, "No existe el usuario o esta mal escrito", null, JOptionPane.ERROR_MESSAGE);
+                    n_buscar.setText("");
+                }
+            }else{
+                JOptionPane.showMessageDialog(null, "Solo se aceptan letras", null, JOptionPane.WARNING_MESSAGE);
+                n_buscar.setText("");
+            }
+        }catch (Exception e){
+            
+        }
+    }//GEN-LAST:event_buscarActionPerformed
+
+    private void n_buscarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_n_buscarKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_ENTER){
+            buscar.doClick();
+        }
+    }//GEN-LAST:event_n_buscarKeyPressed
+
+    private void restablecerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restablecerActionPerformed
+         n_buscar.setText("");
+       if(n_buscar.getText().equals("")){
+          filtro = new TableRowSorter(datosVisit.getModel());
+          datosVisit.setRowSorter(filtro);
+          filtro.setRowFilter(RowFilter.regexFilter(n_buscar.getText(), 0));
+       }
+       n_buscar.requestFocus();
+    }//GEN-LAST:event_restablecerActionPerformed
+
+    private void guadarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guadarActionPerformed
+        try{
+            archivoSalida  = new File("C:\\Users\\js98v\\Desktop\\pdfs\\Registros_Entradas_Visitantes.txt");
+            flujoSalida  = new FileOutputStream(archivoSalida);
+            archivoTxt = new PrintWriter(flujoSalida);
+            archivoTxt.println("Fecha     | Hora  | Nombre Visitante| Id | Nombre de Inquilino  ");
+            Connection conect = null;
+            conect = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE", "isw", "isw");
+            Statement st = conect.createStatement();
+            String sql="SELECT ID, NOMBRE, NOMBRE_VI, FECHA, HORA FROM VISITANTES ORDER BY FECHA DESC, HORA DESC";
+            rs = st.executeQuery(sql); // ejecuta la query
+            
+            while (rs.next()) {
+                id = rs.getInt("ID");
+                nombre = rs.getString("NOMBRE");
+                apellidoP = rs.getString("NOMBRE_VI");
+                fecha = rs.getString("FECHA");
+                hora = rs.getString("HORA");
+                archivoTxt.println(fecha.substring(0, 10)+"  "+hora+"  "+apellidoP+"   "+id+"   "+nombre);
+                
+            }
+            archivoTxt.close();
+            rs.close();
+            JOptionPane.showMessageDialog(null, "Guardado");
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "No se pudo guardar", null, JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_guadarActionPerformed
+
+    private void n_buscarKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_n_buscarKeyTyped
+        if(n_buscar.getText().length()>29){
+            evt.consume();
+        }
+    }//GEN-LAST:event_n_buscarKeyTyped
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(mostrar_Registros_Visitas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(mostrar_Registros_Visitas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(mostrar_Registros_Visitas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(mostrar_Registros_Visitas.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new mostrar_Registros_Visitas().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buscar;
+    private javax.swing.JTable datosVisit;
+    private javax.swing.JButton guadar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField n_buscar;
+    private javax.swing.JButton regresar;
+    private javax.swing.JButton restablecer;
+    // End of variables declaration//GEN-END:variables
+}
